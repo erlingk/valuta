@@ -1,9 +1,16 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'eklandroidkey'
+            keyPassword 'elmu01'
+            storeFile file('/Users/klaboe/keystore/android.jks')
+            storePassword 'elmu01'
+        }
+    }
     compileSdkVersion 21
     buildToolsVersion "20.0.0"
-
     defaultConfig {
         applicationId "com.example.klaboe.valutakalkulator"
         minSdkVersion 11
@@ -15,6 +22,9 @@ android {
         release {
             runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
+        }
+        debug {
         }
     }
 }
