@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,11 +14,17 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.w3c.dom.Text;
+
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends ActionBarActivity {
@@ -26,13 +33,15 @@ public class MainActivity extends ActionBarActivity {
 
     private EditText currFrom;
     private Spinner spinnerFrom;
-
     private EditText currTo;
     private Spinner spinnerTo;
-
     private CheckBox checkBoxAllCurrencies;
+    private TextView syncDate;
+    private Button btnGetRate;
+
     private ArrayAdapter<String> adapter;
     private List<String> usedCurrencies;
+    private Date lastDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +55,8 @@ public class MainActivity extends ActionBarActivity {
         currTo = (EditText) findViewById(R.id.editText2);
         spinnerTo = (Spinner) findViewById(R.id.spinner2);
         checkBoxAllCurrencies = (CheckBox) findViewById(R.id.checkBoxAllCurrencies);
+        syncDate = (TextView) findViewById(R.id.syncDate);
+        btnGetRate = (Button) findViewById(R.id.btnGetRate);
 
         currencyHandler = new CurrencyHandler(getApplicationContext());
         currencyLoader = new CurrencyLoader();
@@ -106,6 +117,16 @@ public class MainActivity extends ActionBarActivity {
                 } else {
                     updateCurrencies();
                 }
+            }
+        });
+
+        btnGetRate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Date oldDate = currencyHandler.getDate();
+                currencyLoader = new CurrencyLoader();
+                currencyLoader.execute((Void) null);
+
             }
         });
     }
@@ -192,7 +213,7 @@ public class MainActivity extends ActionBarActivity {
                 usedCurrencies = currencyHandler.getPopularCurrencies();
             }
 
-            currencyHandler.getc
+
             Collections.sort(usedCurrencies);
             adapter = new ArrayAdapter<String>(MainActivity.this,
                     android.R.layout.simple_list_item_1, usedCurrencies);
@@ -202,6 +223,17 @@ public class MainActivity extends ActionBarActivity {
 
             spinnerFrom.setSelection(usedCurrencies.indexOf(currencyHandler.getDefaultFromCurrency()));
             spinnerTo.setSelection(usedCurrencies.indexOf(currencyHandler.getDefaultToCurrency()));
+
+            if(lastDate != null && lastDate.getTime() != currencyHandler.getDate().getTime()) {
+                Toast toast = Toast.makeText(getApplicationContext(), "Kurser oppdatert", Toast.LENGTH_LONG);
+                toast.show();
+            } else if(lastDate != null) {
+                Toast toast = Toast.makeText(getApplicationContext(), "Ingen nye kurser tilgjengelig", Toast.LENGTH_LONG);
+                toast.show();
+            }
+
+            lastDate = currencyHandler.getDate();
+            syncDate.setText(lastDate.toString());
         }
     }
 }

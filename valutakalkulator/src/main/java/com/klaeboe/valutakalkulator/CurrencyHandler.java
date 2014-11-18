@@ -3,6 +3,7 @@ package com.klaeboe.valutakalkulator;
 import android.content.Context;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -56,6 +57,10 @@ public class CurrencyHandler {
         currencyMap = connectionHandler.getCurrencyMap();
         removePopularCurrenciesNotAvailable(currencyMap.keySet());
         return !currencyMap.isEmpty();
+    }
+
+    public Date getDate() {
+        return connectionHandler.getDate();
     }
 
     private void removePopularCurrenciesNotAvailable(Set<String> availableCurrencies) {

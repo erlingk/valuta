@@ -65,8 +65,29 @@
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="right"
         android:layout_margin="30dp"
-        android:text="Vis alle valutaer"
+        android:text="Benytt alle valutaer"
         android:id="@+id/checkBoxAllCurrencies" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:text="Valutakurser oppdatert:"
+        android:id="@+id/textView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:text=""
+        android:id="@+id/syncDate" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="30dp"
+        android:text="Oppdater valutakurser"
+        android:id="@+id/btnGetRate" />
+
 </LinearLayout>
