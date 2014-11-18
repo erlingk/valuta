@@ -1,4 +1,4 @@
-package com.example.klaboe.valutakalkulator;
+package com.klaeboe.valutakalkulator;
 
 import android.util.Log;
 
