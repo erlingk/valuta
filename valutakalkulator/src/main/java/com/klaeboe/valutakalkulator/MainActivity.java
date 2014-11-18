@@ -1,5 +1,6 @@
 package com.klaeboe.valutakalkulator;
 
+import android.app.AlertDialog;
 import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
@@ -18,7 +19,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 public class MainActivity extends ActionBarActivity {
     private CurrencyLoader currencyLoader;
@@ -32,10 +32,6 @@ public class MainActivity extends ActionBarActivity {
 
     private CheckBox checkBoxAllCurrencies;
     private ArrayAdapter<String> adapter;
-
-    private Map<String, String> currencyMap;
-    private List<String> allCurrencies;
-    private List<String> popularCurrencies;
     private List<String> usedCurrencies;
 
     @Override
@@ -47,13 +43,11 @@ public class MainActivity extends ActionBarActivity {
 
         currFrom = (EditText) findViewById(R.id.editText);
         spinnerFrom = (Spinner) findViewById(R.id.spinner);
-
         currTo = (EditText) findViewById(R.id.editText2);
         spinnerTo = (Spinner) findViewById(R.id.spinner2);
-
         checkBoxAllCurrencies = (CheckBox) findViewById(R.id.checkBoxAllCurrencies);
 
-        currencyHandler = new CurrencyHandler();
+        currencyHandler = new CurrencyHandler(getApplicationContext());
         currencyLoader = new CurrencyLoader();
 
         currencyLoader.execute((Void) null);
@@ -79,31 +73,10 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        /*currFrom.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                Log.v(getApplicationContext().getClass().getName(), "beforeTextChanged: " + s);
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.v(getApplicationContext().getClass().getName(), "onTextChanged: " + s);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                Log.v(getApplicationContext().getClass().getName(), "afterTextChanged: " + s);
-            }
-        });*/
-
         spinnerFrom.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Log.v(getApplicationContext().getClass().getName(), "position: " + position);
-                TextView textView = (TextView) view;
-
-                String selectedCurrency = ((TextView) view).getText().toString();
-                //currViewFrom.setText(currencyMap.get(selectedCurrency));
                 calculateCurrency();
             }
 
@@ -116,8 +89,6 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Log.v(getApplicationContext().getClass().getName(), "position: " + position);
-                String selectedCurrency = ((TextView) view).getText().toString();
-                //currTo.setText(currencyMap.get(selectedCurrency));
                 calculateCurrency();
             }
 
@@ -163,11 +134,8 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void calculateCurrency() {
-        //String fromCurrencyString = currencyMap.get(((TextView)spinnerFrom.getSelectedItem()).getText());
-        //String toCurrencyString = currencyMap.get(((TextView)spinnerTo.getSelectedItem()).getText());
-
-        String fromCurrencyString = currencyMap.get(spinnerFrom.getSelectedItem());
-        String toCurrencyString = currencyMap.get(spinnerTo.getSelectedItem());
+        String fromCurrencyString = currencyHandler.getCurrencyMap().get(spinnerFrom.getSelectedItem());
+        String toCurrencyString = currencyHandler.getCurrencyMap().get(spinnerTo.getSelectedItem());
 
         float fromCurrency = Float.parseFloat(fromCurrencyString);
         float toCurrency = Float.parseFloat(toCurrencyString);
@@ -191,42 +159,40 @@ public class MainActivity extends ActionBarActivity {
         spinnerTo.setSelection(usedCurrencies.indexOf(currencyHandler.getDefaultToCurrency()));
     }
 
-    private class CurrencyLoader extends AsyncTask<Void, Void, String> {
-        ConnectionHandler connectionHandler;
-        //CurrencyHandler currencyHandler;
+    private class CurrencyLoader extends AsyncTask<Void, Void, Boolean> {
 
         @Override
         protected void onPreExecute() {
             // TODO Auto-generated method stub
             super.onPreExecute();
-            this.connectionHandler = new ConnectionHandler(getApplicationContext());
-            //this.currencyHandler = new CurrencyHandler();
         }
 
         @Override
-        protected String doInBackground(Void... params) {
+        protected Boolean doInBackground(Void... params) {
             // TODO Auto-generated method stub
-            Log.v(this.getClass().getName(), "isConnectingToInternet(): " + connectionHandler.isConnectingToInternet());
-            if(connectionHandler.isConnectingToInternet()) {
-                return connectionHandler.getCurrencies();
+            Log.v(this.getClass().getName(), "doInBackground()");
+            return currencyHandler.populateCurrencies();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            // TODO Auto-generated method stub
+            super.onPostExecute(success);
+
+            if(!success) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+                builder.setTitle("Currencies not available");
+                builder.show();
+                return;
             }
-            return "";
-        }
-
-        @Override
-        protected void onPostExecute(String currencies) {
-            // TODO Auto-generated method stub
-            super.onPostExecute(currencies);
-            currencyMap = currencyHandler.getCurrencyMap(currencies);
-            popularCurrencies = currencyHandler.getPopularCurrencies();
-            allCurrencies = currencyHandler.getAvailableCurrencies();
 
             if(checkBoxAllCurrencies.isChecked()) {
-                usedCurrencies = allCurrencies;
+                usedCurrencies = currencyHandler.getAvailableCurrencies();
             } else {
-                usedCurrencies = popularCurrencies;
+                usedCurrencies = currencyHandler.getPopularCurrencies();
             }
 
+            currencyHandler.getc
             Collections.sort(usedCurrencies);
             adapter = new ArrayAdapter<String>(MainActivity.this,
                     android.R.layout.simple_list_item_1, usedCurrencies);

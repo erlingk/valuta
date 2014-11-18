@@ -1,15 +1,8 @@
 package com.klaeboe.valutakalkulator;
 
-import android.util.Log;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import android.content.Context;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,15 +11,25 @@ import java.util.Set;
  * Created by klaboe on 11/11/14.
  */
 public class CurrencyHandler {
-    private List<String> availableCurrencies = new ArrayList<String>();
+    private String DEFAULT_FROM_CURRENCY = "EUR";
+    private String DEFAULT_TO_CURRENCY = "NOK";
+
+    private ConnectionHandler connectionHandler;
+    private Map<String, String> currencyMap;
     private List<String> popularCurrencies = new ArrayList<String>(Arrays.asList(
             "USD", "EUR", "GBP", "CHF", "NOK", "SEK", "DKK", "RUB",
             "CNY", "INR", "JPY", "AUD", "CAD"));
-    private String DATE_KEY = "DateTime";
-    private Date date;
+
+    public CurrencyHandler(Context context) {
+        connectionHandler = new ConnectionHandler(context);
+    }
+
+    public Map<String, String> getCurrencyMap () {
+        return currencyMap;
+    }
 
     public List<String> getAvailableCurrencies() {
-        return new ArrayList<String>(availableCurrencies);
+        return new ArrayList<String>(currencyMap.keySet());
     }
 
     public List<String> getPopularCurrencies() {
@@ -34,59 +37,28 @@ public class CurrencyHandler {
     }
 
     public String getDefaultFromCurrency() {
-        return "EUR";
+        if(currencyMap.containsKey(DEFAULT_FROM_CURRENCY)) {
+            return DEFAULT_FROM_CURRENCY;
+        } else {
+            return (String)currencyMap.keySet().toArray()[0];
+        }
     }
 
     public String getDefaultToCurrency() {
-        return "NOK";
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public Map getCurrencyMap(String currencies) {
-
-        Map<String, String> currencyMap = new HashMap<String, String>();
-
-        try {
-            JSONArray arr;
-            if(currencies != null && !currencies.isEmpty()) {
-                arr = new JSONArray(currencies);
-            } else {
-                Log.e(this.getClass().getName(), "Currencies not available");
-                return null;
-            }
-            Log.v(this.getClass().getName(), "Json string: " + arr.getString(0));
-
-            JSONObject jsonObj = arr.getJSONObject(0);
-            JSONArray currArray = jsonObj.names();
-
-            for(int i = 0; i < currArray.length(); i++) {
-                String key = currArray.getString(i);
-                String value = jsonObj.getString(key);
-                Log.v(this.getClass().getName(), "Json key: " + key);
-                Log.v(this.getClass().getName(), "Json value: " + value);
-
-                if(key.equals(DATE_KEY)) {
-                    //date = new Date(value);
-                } else {
-                    currencyMap.put(key, value);
-                }
-            }
-
-            availableCurrencies = new ArrayList<String>(currencyMap.keySet());
-            removeUnavailableCurrencies(currencyMap.keySet());
-
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        if(currencyMap.containsKey(DEFAULT_TO_CURRENCY)) {
+            return DEFAULT_TO_CURRENCY;
+        } else {
+            return (String)currencyMap.keySet().toArray()[0];
         }
-
-        return currencyMap;
     }
 
-    private void removeUnavailableCurrencies(Set<String> availableCurrencies) {
+    public boolean populateCurrencies() {
+        currencyMap = connectionHandler.getCurrencyMap();
+        removePopularCurrenciesNotAvailable(currencyMap.keySet());
+        return !currencyMap.isEmpty();
+    }
+
+    private void removePopularCurrenciesNotAvailable(Set<String> availableCurrencies) {
         List<String> toRemove= new ArrayList<String>();
         for(String popularCurrency : popularCurrencies) {
             if(!availableCurrencies.contains(popularCurrency)) {
