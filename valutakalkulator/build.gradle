@@ -12,7 +12,7 @@ android {
     compileSdkVersion 21
     buildToolsVersion "20.0.0"
     defaultConfig {
-        applicationId "com.example.klaboe.valutakalkulator"
+        applicationId "com.klaeboe.valutakalkulator"
         minSdkVersion 19
         targetSdkVersion 21
         versionCode 1
