@@ -43,7 +43,6 @@ public class MainActivity extends ActionBarActivity {
     private List<String> usedCurrencies;
     private Date lastDate;
     private final List<String> currencyList = new ArrayList<String>();
-    private final List<String> currencyList2 = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,26 +56,18 @@ public class MainActivity extends ActionBarActivity {
         currTo = (TextView) findViewById(R.id.editText2);
         spinnerTo = (Spinner) findViewById(R.id.spinner2);
         checkBoxAllCurrencies = (CheckBox) findViewById(R.id.checkBoxAllCurrencies);
-        //currencyListView = (ListView) findViewById(R.id.currencyListView);
+        currencyListView = (ListView) findViewById(R.id.currencyListView);
         syncDate = (TextView) findViewById(R.id.syncDate);
         btnGetRate = (Button) findViewById(R.id.btnGetRate);
 
         currencyHandler = new CurrencyHandler(getApplicationContext());
         currencyLoader = new CurrencyLoader();
 
-        /*
-        currencyList.add("flag1");
-        currencyList.add("flag2");
-        currencyList.add("flag3");
-        currencyList2.add("EUR");
-        currencyList2.add("NOK");
-        currencyList2.add("SEK");
-
-        final ArrayAdapter<String, String> currencyAdapter = new ArrayAdapter<String, String>(MainActivity.this,
-                android.R.layout.simple_list_item_1, currencyList, currencyList2);
-
+        String[] values = new String[] { "EUR", "NOK", "SEK"};
+        String[] rates = new String[] { "1.1", "2.2", "3.33"};
+        CurrencyAdapter currencyAdapter = new CurrencyAdapter(this, values, rates);
         currencyListView.setAdapter(currencyAdapter);
-*/
+
         currencyLoader.execute((Void) null);
 
         currFrom.setOnEditorActionListener(new TextView.OnEditorActionListener() {

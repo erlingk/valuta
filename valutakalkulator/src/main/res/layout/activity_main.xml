@@ -71,14 +71,6 @@
         android:layout_gravity="right"
         android:text="Alle valutaer tilgjengelig" />
 
-    <ListView
-        android:layout_width="wrap_content"
-        android:layout_height="0dip"
-        android:id="@+id/currencyListView">
-
-    </ListView>
-
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dip"
@@ -92,19 +84,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
-            android:text="Valutakurser oppdatert:" />
+            android:text="Valutakurser:" />
+
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:dividerHeight="1dp"
+            android:divider="@null"
+            android:id="@+id/currencyListView">
+        </ListView>
 
         <TextView
             android:id="@+id/syncDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:text="" />
 
         <Button
             android:id="@+id/btnGetRate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="25dp"
             android:layout_marginBottom="5dp"
             android:text="Hent nye valutakurser" />
     </LinearLayout>
