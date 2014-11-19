@@ -6,7 +6,6 @@ import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,12 +16,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -33,15 +32,18 @@ public class MainActivity extends ActionBarActivity {
 
     private EditText currFrom;
     private Spinner spinnerFrom;
-    private EditText currTo;
+    private TextView currTo;
     private Spinner spinnerTo;
     private CheckBox checkBoxAllCurrencies;
+    private ListView currencyListView;
     private TextView syncDate;
     private Button btnGetRate;
 
     private ArrayAdapter<String> adapter;
     private List<String> usedCurrencies;
     private Date lastDate;
+    private final List<String> currencyList = new ArrayList<String>();
+    private final List<String> currencyList2 = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,15 +54,29 @@ public class MainActivity extends ActionBarActivity {
 
         currFrom = (EditText) findViewById(R.id.editText);
         spinnerFrom = (Spinner) findViewById(R.id.spinner);
-        currTo = (EditText) findViewById(R.id.editText2);
+        currTo = (TextView) findViewById(R.id.editText2);
         spinnerTo = (Spinner) findViewById(R.id.spinner2);
         checkBoxAllCurrencies = (CheckBox) findViewById(R.id.checkBoxAllCurrencies);
+        //currencyListView = (ListView) findViewById(R.id.currencyListView);
         syncDate = (TextView) findViewById(R.id.syncDate);
         btnGetRate = (Button) findViewById(R.id.btnGetRate);
 
         currencyHandler = new CurrencyHandler(getApplicationContext());
         currencyLoader = new CurrencyLoader();
 
+        /*
+        currencyList.add("flag1");
+        currencyList.add("flag2");
+        currencyList.add("flag3");
+        currencyList2.add("EUR");
+        currencyList2.add("NOK");
+        currencyList2.add("SEK");
+
+        final ArrayAdapter<String, String> currencyAdapter = new ArrayAdapter<String, String>(MainActivity.this,
+                android.R.layout.simple_list_item_1, currencyList, currencyList2);
+
+        currencyListView.setAdapter(currencyAdapter);
+*/
         currencyLoader.execute((Void) null);
 
         currFrom.setOnEditorActionListener(new TextView.OnEditorActionListener() {
