@@ -10,6 +10,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -68,6 +69,9 @@ public class MainActivity extends ActionBarActivity {
         CurrencyAdapter currencyAdapter = new CurrencyAdapter(this, values, rates);
         currencyListView.setAdapter(currencyAdapter);
 
+        // Hide keyboard when app opens (due to focus on edit text)
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
         currencyLoader.execute((Void) null);
 
         currFrom.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -76,9 +80,8 @@ public class MainActivity extends ActionBarActivity {
                 Log.v(getApplicationContext().getClass().getName(), "onEditorAction id: " + actionId);
                 if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT) {
                     calculateCurrency();
-                    return true;
                 }
-                return false;
+                return false; // Hide keyboard when done
             }
         });
 
