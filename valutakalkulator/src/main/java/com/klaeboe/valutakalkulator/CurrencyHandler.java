@@ -13,13 +13,12 @@ import java.util.Set;
  */
 public class CurrencyHandler {
     private String DEFAULT_FROM_CURRENCY = "EUR";
-    private String DEFAULT_TO_CURRENCY = "NOK";
+    private String LOCAL_CURRENCY = "NOK";
 
     private ConnectionHandler connectionHandler;
     private Map<String, String> currencyMap;
     private List<String> popularCurrencies = new ArrayList<String>(Arrays.asList(
-            "USD", "EUR", "GBP", "CHF", "NOK", "SEK", "DKK", "RUB",
-            "CNY", "INR", "JPY", "AUD", "CAD"));
+            "USD", "EUR", "GBP", "CHF", "NOK", "SEK", "DKK", "JPY", "AUD", "CAD"));
 
     public CurrencyHandler(Context context) {
         connectionHandler = new ConnectionHandler(context);
@@ -37,6 +36,12 @@ public class CurrencyHandler {
         return new ArrayList<String>(popularCurrencies);
     }
 
+    public List<String> getPopularCurrenciesNotTheLocal() {
+        List<String> popularCurrencies = getPopularCurrencies();
+        popularCurrencies.remove(LOCAL_CURRENCY);
+        return popularCurrencies;
+    }
+
     public String getDefaultFromCurrency() {
         if(currencyMap.containsKey(DEFAULT_FROM_CURRENCY)) {
             return DEFAULT_FROM_CURRENCY;
@@ -46,8 +51,8 @@ public class CurrencyHandler {
     }
 
     public String getDefaultToCurrency() {
-        if(currencyMap.containsKey(DEFAULT_TO_CURRENCY)) {
-            return DEFAULT_TO_CURRENCY;
+        if(currencyMap.containsKey(LOCAL_CURRENCY)) {
+            return LOCAL_CURRENCY;
         } else {
             return (String)currencyMap.keySet().toArray()[0];
         }

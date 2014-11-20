@@ -40,7 +40,8 @@ public class MainActivity extends ActionBarActivity {
     private TextView syncDate;
     private Button btnGetRate;
 
-    private ArrayAdapter<String> adapter;
+    private ArrayAdapter<String> currencyTagAdapter;
+    private CurrencyAdapter currencyAdapter;
     private List<String> usedCurrencies;
     private Date lastDate;
     private final List<String> currencyList = new ArrayList<String>();
@@ -63,11 +64,6 @@ public class MainActivity extends ActionBarActivity {
 
         currencyHandler = new CurrencyHandler(getApplicationContext());
         currencyLoader = new CurrencyLoader();
-
-        String[] values = new String[] { "EUR", "NOK", "SEK"};
-        String[] rates = new String[] { "1.1", "2.2", "3.33"};
-        CurrencyAdapter currencyAdapter = new CurrencyAdapter(this, values, rates);
-        currencyListView.setAdapter(currencyAdapter);
 
         // Hide keyboard when app opens (due to focus on edit text)
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -133,10 +129,8 @@ public class MainActivity extends ActionBarActivity {
         btnGetRate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Date oldDate = currencyHandler.getDate();
                 currencyLoader = new CurrencyLoader();
                 currencyLoader.execute((Void) null);
-
             }
         });
     }
@@ -184,7 +178,7 @@ public class MainActivity extends ActionBarActivity {
 
         Collections.sort(usedCurrencies);
         Log.v(getApplicationContext().getClass().getName(), "updateCurrencies: " + usedCurrencies);
-        adapter.notifyDataSetChanged();
+        currencyTagAdapter.notifyDataSetChanged();
 
         spinnerFrom.setSelection(usedCurrencies.indexOf(currencyHandler.getDefaultFromCurrency()));
         spinnerTo.setSelection(usedCurrencies.indexOf(currencyHandler.getDefaultToCurrency()));
@@ -223,13 +217,14 @@ public class MainActivity extends ActionBarActivity {
                 usedCurrencies = currencyHandler.getPopularCurrencies();
             }
 
+            currencyAdapter = new CurrencyAdapter(MainActivity.this, currencyHandler);
+            currencyListView.setAdapter(currencyAdapter);
 
             Collections.sort(usedCurrencies);
-            adapter = new ArrayAdapter<String>(MainActivity.this,
+            currencyTagAdapter = new ArrayAdapter<String>(MainActivity.this,
                     android.R.layout.simple_list_item_1, usedCurrencies);
-
-            spinnerFrom.setAdapter(adapter);
-            spinnerTo.setAdapter(adapter);
+            spinnerFrom.setAdapter(currencyTagAdapter);
+            spinnerTo.setAdapter(currencyTagAdapter);
 
             spinnerFrom.setSelection(usedCurrencies.indexOf(currencyHandler.getDefaultFromCurrency()));
             spinnerTo.setSelection(usedCurrencies.indexOf(currencyHandler.getDefaultToCurrency()));

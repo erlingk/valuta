@@ -1,6 +1,7 @@
 package com.klaeboe.valutakalkulator;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,14 +14,13 @@ import android.widget.TextView;
  */
 public class CurrencyAdapter extends ArrayAdapter<String> {
     private final Context context;
-    private final String[] values;
-    private final String[] rates;
+    private CurrencyHandler currencyHandler;
+    private String NOK_TAG = "NOK";
 
-    public CurrencyAdapter(Context context, String[] values, String[] rates) {
-        super(context, R.layout.rowlayout, values);
+    public CurrencyAdapter(Context context, CurrencyHandler currencyHandler) {
+        super(context, R.layout.rowlayout, currencyHandler.getPopularCurrenciesNotTheLocal());
         this.context = context;
-        this.values = values;
-        this.rates = rates;
+        this.currencyHandler = currencyHandler;
     }
 
     @Override
@@ -31,17 +31,23 @@ public class CurrencyAdapter extends ArrayAdapter<String> {
         TextView currencyTextView = (TextView) rowView.findViewById(R.id.listCur);
         TextView ratesTextView = (TextView) rowView.findViewById(R.id.listRate);
         ImageView flagImageView = (ImageView) rowView.findViewById(R.id.listFlagIcon);
-        currencyTextView.setText(values[position]);
-        ratesTextView.setText(rates[position]);
+
+        String currencyTag = currencyHandler.getPopularCurrenciesNotTheLocal().get(position);
+        currencyTextView.setText(currencyTag);
+
+        float tagValue = Float.parseFloat(currencyHandler.getCurrencyMap().get(currencyTag));
+        float nokValue = Float.parseFloat(currencyHandler.getCurrencyMap().get(NOK_TAG));
+        String currencyValue = String.format("%.3f", nokValue/tagValue);
+        ratesTextView.setText(currencyValue);
 
         // set flag icon
-        String s = values[position];
-        if (s.startsWith("EUR")) {
+        int resourceId = context.getResources().getIdentifier(currencyTag.toLowerCase(), "drawable", context.getPackageName());
+        if (resourceId != 0) {
+            Log.v(context.getClass().getName(), "Adding flag for tag: " + currencyTag);
+            flagImageView.setImageResource(resourceId);
+        } else {
+            Log.v(context.getClass().getName(), "Flag image not found for tag: " + currencyTag);
             flagImageView.setImageResource(R.drawable.eur);
-        } else if (s.startsWith("NOK")) {
-            flagImageView.setImageResource(R.drawable.nok);
-        } else if (s.startsWith("SEK")) {
-            flagImageView.setImageResource(R.drawable.sek);
         }
 
         return rowView;
