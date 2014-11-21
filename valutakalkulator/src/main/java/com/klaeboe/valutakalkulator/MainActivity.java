@@ -5,6 +5,7 @@ import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -74,6 +75,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 Log.v(getApplicationContext().getClass().getName(), "onEditorAction id: " + actionId);
+                trimValue(v); // Check if content is empty, contains leading zeroes etc
                 if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT) {
                     calculateCurrency();
                 }
@@ -182,6 +184,19 @@ public class MainActivity extends ActionBarActivity {
 
         spinnerFrom.setSelection(usedCurrencies.indexOf(currencyHandler.getDefaultFromCurrency()));
         spinnerTo.setSelection(usedCurrencies.indexOf(currencyHandler.getDefaultToCurrency()));
+    }
+
+    private void trimValue(final TextView v) {
+        String trimValue = v.getText().toString();
+
+        //Remove leading zeroes
+        trimValue = trimValue.replaceFirst("^0+(?!$)", "");
+
+        // Replace empty string with 1
+        trimValue = trimValue.isEmpty() ? "1" : trimValue;
+
+        Log.v(getApplicationContext().getClass().getName(), "trim'ed currency: " + trimValue);
+        v.setText(trimValue);
     }
 
     private class CurrencyLoader extends AsyncTask<Void, Void, Boolean> {
