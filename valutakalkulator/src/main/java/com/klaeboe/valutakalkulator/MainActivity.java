@@ -1,11 +1,13 @@
 package com.klaeboe.valutakalkulator;
 
 import android.app.AlertDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -15,15 +17,13 @@ import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -34,18 +34,17 @@ public class MainActivity extends ActionBarActivity {
 
     private EditText currFrom;
     private Spinner spinnerFrom;
+    private ImageButton switchRateButton;
     private TextView currTo;
     private Spinner spinnerTo;
-    private CheckBox checkBoxAllCurrencies;
     private ListView currencyListView;
     private TextView syncDate;
-    private Button btnGetRate;
+    private ImageButton syncRateButton;
 
     private ArrayAdapter<String> currencyTagAdapter;
     private CurrencyAdapter currencyAdapter;
     private List<String> usedCurrencies;
     private Date lastDate;
-    private final List<String> currencyList = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,18 +55,20 @@ public class MainActivity extends ActionBarActivity {
 
         currFrom = (EditText) findViewById(R.id.editText);
         spinnerFrom = (Spinner) findViewById(R.id.spinner);
+        switchRateButton = (ImageButton) findViewById(R.id.switchRateButton);
         currTo = (TextView) findViewById(R.id.editText2);
         spinnerTo = (Spinner) findViewById(R.id.spinner2);
-        checkBoxAllCurrencies = (CheckBox) findViewById(R.id.checkBoxAllCurrencies);
         currencyListView = (ListView) findViewById(R.id.currencyListView);
         syncDate = (TextView) findViewById(R.id.syncDate);
-        btnGetRate = (Button) findViewById(R.id.btnGetRate);
+        syncRateButton = (ImageButton) findViewById(R.id.syncRateButton);
 
         currencyHandler = new CurrencyHandler(getApplicationContext());
         currencyLoader = new CurrencyLoader();
 
         // Hide keyboard when app opens (due to focus on edit text)
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
         currencyLoader.execute((Void) null);
 
@@ -87,7 +88,7 @@ public class MainActivity extends ActionBarActivity {
         currFrom.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             public void onFocusChange(View v, boolean hasFocus) {
                 Log.v(getApplicationContext().getClass().getName(), "hasFocus: " + hasFocus);
-                if(!hasFocus)
+                if (!hasFocus)
                     calculateCurrency();
             }
         });
@@ -116,19 +117,16 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        checkBoxAllCurrencies.setOnClickListener(new View.OnClickListener() {
+        switchRateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CheckBox checkBox = (CheckBox) v;
-                if(checkBox.isChecked()) {
-                    updateCurrencies();
-                } else {
-                    updateCurrencies();
-                }
+                int oldFromSpinnerPos = spinnerFrom.getSelectedItemPosition();
+                spinnerFrom.setSelection(spinnerTo.getSelectedItemPosition());
+                spinnerTo.setSelection(oldFromSpinnerPos);
             }
         });
 
-        btnGetRate.setOnClickListener(new View.OnClickListener() {
+        syncRateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 currencyLoader = new CurrencyLoader();
@@ -152,9 +150,15 @@ public class MainActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_settings:
+                Log.v(getApplicationContext().getClass().getName(), "Starting settings activity");
+                Intent i = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(i);
+                break;
+            /*case R.id.exit:
+                finish();
+                break;*/
         }
 
         return super.onOptionsItemSelected(item);
@@ -170,6 +174,7 @@ public class MainActivity extends ActionBarActivity {
         currTo.setText(Float.toString(fromValue * toCurrency / fromCurrency));
     }
 
+    /*
     private void updateCurrencies() {
         usedCurrencies.clear();
         if(checkBoxAllCurrencies.isChecked()) {
@@ -185,6 +190,7 @@ public class MainActivity extends ActionBarActivity {
         spinnerFrom.setSelection(usedCurrencies.indexOf(currencyHandler.getDefaultFromCurrency()));
         spinnerTo.setSelection(usedCurrencies.indexOf(currencyHandler.getDefaultToCurrency()));
     }
+    */
 
     private void trimValue(final TextView v) {
         String trimValue = v.getText().toString();
@@ -226,7 +232,10 @@ public class MainActivity extends ActionBarActivity {
                 return;
             }
 
-            if(checkBoxAllCurrencies.isChecked()) {
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            boolean allCurrencies = sharedPref.getBoolean(SettingsActivity.KEY_ALL_CURRENCIES, true);
+
+            if(allCurrencies) {
                 usedCurrencies = currencyHandler.getAvailableCurrencies();
             } else {
                 usedCurrencies = currencyHandler.getPopularCurrencies();

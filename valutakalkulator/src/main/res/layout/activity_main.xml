@@ -30,14 +30,28 @@
             android:layout_weight="1" />
     </LinearLayout>
 
-
-    <ImageView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/imageView"
-        android:src="@drawable/arrow_down_float"
-        android:layout_marginLeft="80dp"
-        android:layout_marginTop="15dp"/>
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/switchRateButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="80dp"
+            android:layout_marginTop="15dp"
+            android:background="@null"
+            android:src="@drawable/sync" />
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="20dp"
+            android:text="Bytt" />
+    </LinearLayout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="wrap_content"
@@ -63,15 +77,6 @@
             android:layout_weight="1" />
     </LinearLayout>
 
-    <CheckBox
-        android:id="@+id/checkBoxAllCurrencies"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="30dp"
-        android:layout_marginTop="20dp"
-        android:layout_gravity="right"
-        android:text="Alle valutaer tilgjengelig" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dip"
@@ -80,34 +85,49 @@
         android:gravity="bottom"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:text="Valutakurser:" />
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Valutakurser " />
+
+            <TextView
+                android:id="@+id/syncDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="" />
+        </LinearLayout>
 
         <ListView
+            android:id="@+id/currencyListView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:dividerHeight="0dp"
             android:divider="@null"
-            android:id="@+id/currencyListView">
-        </ListView>
+            android:dividerHeight="0dp" />
+
+
+        <ImageButton
+            android:id="@+id/syncRateButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="10dp"
+            android:background="@null"
+            android:src="@drawable/sync" />
 
         <TextView
-            android:id="@+id/syncDate"
+            android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="" />
+            android:layout_marginBottom="20dp"
+            android:text="Oppdater" />
 
-        <Button
-            android:id="@+id/btnGetRate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:layout_marginBottom="5dp"
-            android:text="Hent kurser" />
     </LinearLayout>
 </LinearLayout>
