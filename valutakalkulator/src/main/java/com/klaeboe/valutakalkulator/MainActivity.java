@@ -48,6 +48,8 @@ public class MainActivity extends ActionBarActivity {
 
     private boolean firstCurrencyItemSelected;
 
+    private SharedPreferences sharedPref;
+    public static final String KEY_OLD_FROM_VAL = "prefOldFromValue";
     public static final String KEY_OLD_FROM_SPINNER = "prefOldFromSpinner";
     public static final String KEY_OLD_TO_SPINNER = "prefOldToSpinner";
 
@@ -76,6 +78,12 @@ public class MainActivity extends ActionBarActivity {
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String oldCurrencyFromVal = sharedPref.getString(KEY_OLD_FROM_VAL, "");
+        if(!oldCurrencyFromVal.isEmpty()) {
+            currFrom.setText(oldCurrencyFromVal);
+        }
+
         currencyLoader.execute((Void) null);
 
         currFrom.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -83,19 +91,13 @@ public class MainActivity extends ActionBarActivity {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 Log.v(getApplicationContext().getClass().getName(), "onEditorAction id: " + actionId);
                 trimValue(v); // Check if content is empty, contains leading zeroes etc
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                sharedPref.edit().putString(KEY_OLD_FROM_VAL, v.getText().toString()).commit();
+
                 if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT) {
                     calculateCurrency();
                 }
                 return false; // Hide keyboard when done
-            }
-        });
-
-
-        currFrom.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            public void onFocusChange(View v, boolean hasFocus) {
-                Log.v(getApplicationContext().getClass().getName(), "hasFocus: " + hasFocus);
-                if (!hasFocus)
-                    calculateCurrency();
             }
         });
 
@@ -240,9 +242,7 @@ public class MainActivity extends ActionBarActivity {
                 return;
             }
 
-            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
             boolean allCurrencies = sharedPref.getBoolean(SettingsActivity.KEY_ALL_CURRENCIES, true);
-
             if(allCurrencies) {
                 usedCurrencies = currencyHandler.getAvailableCurrencies();
             } else {

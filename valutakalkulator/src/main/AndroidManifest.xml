@@ -8,7 +8,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/green_euro"
+        android:icon="@drawable/euro_blue"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
