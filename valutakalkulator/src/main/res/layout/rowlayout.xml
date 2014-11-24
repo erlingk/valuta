@@ -5,8 +5,8 @@
 
     <ImageView
         android:id="@+id/listFlagIcon"
-        android:layout_width="15dp"
-        android:layout_height="15dp"
+        android:layout_width="17dp"
+        android:layout_height="17dp"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="10dp"
         android:layout_marginTop="4dp"
@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:gravity="center|left"
         android:text="@+id/label"
-        android:textSize="15dp" />
+        android:textSize="17dp" />
 
     <TextView
         android:id="@+id/listRate"
@@ -28,6 +28,6 @@
         android:layout_marginRight="10dp"
         android:gravity="left"
         android:text="@+id/label"
-        android:textSize="15dp" />
+        android:textSize="17dp" />
 
 </LinearLayout>

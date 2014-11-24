@@ -18,7 +18,7 @@ public class CurrencyAdapter extends ArrayAdapter<String> {
     private String NOK_TAG = "NOK";
 
     public CurrencyAdapter(Context context, CurrencyHandler currencyHandler) {
-        super(context, R.layout.rowlayout, currencyHandler.getPopularCurrenciesNotTheLocal());
+        super(context, R.layout.rowlayout, currencyHandler.getPopularCurrencies());
         this.context = context;
         this.currencyHandler = currencyHandler;
     }
@@ -32,7 +32,7 @@ public class CurrencyAdapter extends ArrayAdapter<String> {
         TextView ratesTextView = (TextView) rowView.findViewById(R.id.listRate);
         ImageView flagImageView = (ImageView) rowView.findViewById(R.id.listFlagIcon);
 
-        String currencyTag = currencyHandler.getPopularCurrenciesNotTheLocal().get(position);
+        String currencyTag = currencyHandler.getPopularCurrencies().get(position);
         currencyTextView.setText(currencyTag);
 
         float tagValue = Float.parseFloat(currencyHandler.getCurrencyMap().get(currencyTag));

@@ -46,11 +46,17 @@ public class MainActivity extends ActionBarActivity {
     private List<String> usedCurrencies;
     private Date lastDate;
 
+    private boolean firstCurrencyItemSelected;
+
+    public static final String KEY_OLD_FROM_SPINNER = "prefOldFromSpinner";
+    public static final String KEY_OLD_TO_SPINNER = "prefOldToSpinner";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        firstCurrencyItemSelected = false;
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         currFrom = (EditText) findViewById(R.id.editText);
@@ -97,6 +103,9 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Log.v(getApplicationContext().getClass().getName(), "position: " + position);
+                String fromTag = spinnerFrom.getSelectedItem().toString();
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                sharedPref.edit().putString(KEY_OLD_FROM_SPINNER, fromTag).commit();
                 calculateCurrency();
             }
 
@@ -109,6 +118,9 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Log.v(getApplicationContext().getClass().getName(), "position: " + position);
+                String toTag = spinnerTo.getSelectedItem().toString();
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                sharedPref.edit().putString(KEY_OLD_TO_SPINNER, toTag).commit();
                 calculateCurrency();
             }
 
@@ -133,8 +145,22 @@ public class MainActivity extends ActionBarActivity {
                 currencyLoader.execute((Void) null);
             }
         });
-    }
 
+        currencyListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.v(getApplicationContext().getClass().getName(), "on itemclick position: " + position);
+                currencyAdapter.getItem(position);
+                int pos = currencyTagAdapter.getPosition(currencyAdapter.getItem(position));
+                if(!firstCurrencyItemSelected) {
+                    spinnerFrom.setSelection(pos);
+                } else {
+                    spinnerTo.setSelection(pos);
+                }
+                firstCurrencyItemSelected = !firstCurrencyItemSelected; // Toggle boolean
+            }
+        });
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -173,24 +199,6 @@ public class MainActivity extends ActionBarActivity {
         float fromValue = Float.parseFloat(currFrom.getText().toString());
         currTo.setText(Float.toString(fromValue * toCurrency / fromCurrency));
     }
-
-    /*
-    private void updateCurrencies() {
-        usedCurrencies.clear();
-        if(checkBoxAllCurrencies.isChecked()) {
-            usedCurrencies.addAll(currencyHandler.getAvailableCurrencies());
-        } else {
-            usedCurrencies.addAll(currencyHandler.getPopularCurrencies());
-        }
-
-        Collections.sort(usedCurrencies);
-        Log.v(getApplicationContext().getClass().getName(), "updateCurrencies: " + usedCurrencies);
-        currencyTagAdapter.notifyDataSetChanged();
-
-        spinnerFrom.setSelection(usedCurrencies.indexOf(currencyHandler.getDefaultFromCurrency()));
-        spinnerTo.setSelection(usedCurrencies.indexOf(currencyHandler.getDefaultToCurrency()));
-    }
-    */
 
     private void trimValue(final TextView v) {
         String trimValue = v.getText().toString();
@@ -250,14 +258,27 @@ public class MainActivity extends ActionBarActivity {
             spinnerFrom.setAdapter(currencyTagAdapter);
             spinnerTo.setAdapter(currencyTagAdapter);
 
-            spinnerFrom.setSelection(usedCurrencies.indexOf(currencyHandler.getDefaultFromCurrency()));
-            spinnerTo.setSelection(usedCurrencies.indexOf(currencyHandler.getDefaultToCurrency()));
+            // Ensure that same currency tags are selected when we reload currencies
+            String oldSpinnerFromTag = sharedPref.getString(KEY_OLD_FROM_SPINNER, "");
+            if(!oldSpinnerFromTag.isEmpty() && usedCurrencies.contains(oldSpinnerFromTag)) {
+                spinnerFrom.setSelection(usedCurrencies.indexOf(oldSpinnerFromTag));
+            } else {
+                spinnerFrom.setSelection(usedCurrencies.indexOf(currencyHandler.getDefaultFromCurrency()));
+            }
+            String oldSpinnerToTag = sharedPref.getString(KEY_OLD_TO_SPINNER, "");
+            if(!oldSpinnerToTag.isEmpty() && usedCurrencies.contains(oldSpinnerToTag)) {
+                spinnerTo.setSelection(usedCurrencies.indexOf(oldSpinnerToTag));
+            } else {
+                spinnerTo.setSelection(usedCurrencies.indexOf(currencyHandler.getDefaultToCurrency()));
+            }
 
             if(lastDate != null && lastDate.getTime() != currencyHandler.getDate().getTime()) {
-                Toast toast = Toast.makeText(getApplicationContext(), "Kurser oppdatert", Toast.LENGTH_LONG);
+                String toastMsg = getString(R.string.title_currenciesUpdated);
+                Toast toast = Toast.makeText(getApplicationContext(), toastMsg, Toast.LENGTH_LONG);
                 toast.show();
             } else if(lastDate != null) {
-                Toast toast = Toast.makeText(getApplicationContext(), "Ingen nye kurser tilgjengelig", Toast.LENGTH_LONG);
+                String toastMsg = getString(R.string.title_noNewCurrenciesAvailable);
+                Toast toast = Toast.makeText(getApplicationContext(), toastMsg, Toast.LENGTH_LONG);
                 toast.show();
             }
 

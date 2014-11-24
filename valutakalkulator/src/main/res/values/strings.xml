@@ -10,4 +10,11 @@
     <string name="pref_allCurrenciesSummary">Flere valutaer vil være tilgjengelig f.eks. under valuta knappen</string>
     <string name="title_activity_settings">SettingsActivity</string>
 
+    <string name="title_updateCurrencies">Oppdater kurser</string>
+    <string name="title_rates">Valutakurser</string>
+    <string name="title_switchCurrencies">Bytt</string>
+
+    <string name="title_currenciesUpdated">Kurser oppdatert</string>
+    <string name="title_noNewCurrenciesAvailable">Ingen nye kurser tilgjengelig</string>
+
 </resources>

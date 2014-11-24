@@ -18,7 +18,7 @@ public class CurrencyHandler {
     private ConnectionHandler connectionHandler;
     private Map<String, String> currencyMap;
     private List<String> popularCurrencies = new ArrayList<String>(Arrays.asList(
-            "USD", "EUR", "GBP", "CHF", "NOK", "SEK", "DKK", "JPY", "AUD", "CAD"));
+            "USD", "EUR", "GBP", "CHF", "SEK", "DKK", "JPY", "AUD", "CAD", "NOK"));
 
     public CurrencyHandler(Context context) {
         connectionHandler = new ConnectionHandler(context);
