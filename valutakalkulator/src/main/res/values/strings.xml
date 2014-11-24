@@ -4,10 +4,10 @@
     <string name="app_name">Valutakalkulator</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="action_finish">Avslutt</string>
     <string name="pref_settings">Brukervalg</string>
-    <string name="pref_return">Klikk for å lagre og returnere</string>
     <string name="pref_allCurrenciesTitle">Gjør flere valutaer tilgjengelig</string>
-    <string name="pref_allCurrenciesSummary">Flere valutaer vil være tilgjengelig f.eks. under valuta knappen</string>
+    <string name="pref_allCurrenciesSummary">Flere valutaer vil være tilgjengelig i meny</string>
     <string name="title_activity_settings">SettingsActivity</string>
 
     <string name="title_updateCurrencies">Oppdater kurser</string>

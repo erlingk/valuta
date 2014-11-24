@@ -178,15 +178,18 @@ public class MainActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        Log.v(getApplicationContext().getClass().getName(), "actionid: " + id);
+
         switch (id) {
             case R.id.action_settings:
                 Log.v(getApplicationContext().getClass().getName(), "Starting settings activity");
                 Intent i = new Intent(MainActivity.this, SettingsActivity.class);
                 startActivity(i);
-                break;
-            /*case R.id.exit:
                 finish();
-                break;*/
+                break;
+            case R.id.action_finish:
+                finish();
+                break;
         }
 
         return super.onOptionsItemSelected(item);

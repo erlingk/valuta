@@ -1,18 +1,20 @@
 package com.klaeboe.valutakalkulator;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.util.Log;
+import android.support.v7.app.ActionBarActivity;
+import android.view.MenuItem;
 
-public class SettingsActivity extends Activity {
+public class SettingsActivity extends ActionBarActivity {
     public static final String KEY_ALL_CURRENCIES = "pref_allCurrencies";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setTitle(getString(R.string.pref_settings));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Display the fragment as the main content.
         getFragmentManager().beginTransaction()
@@ -20,6 +22,19 @@ public class SettingsActivity extends Activity {
                 .commit();
     }
 
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item)
+    {
+        if (item.getItemId() == android.R.id.home)
+        {
+            Intent i = new Intent(this, MainActivity.class);
+            startActivity(i);
+            finish();
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+    }
     public static class SettingsFragment extends PreferenceFragment {
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -28,18 +43,6 @@ public class SettingsActivity extends Activity {
             // Load the preferences from an XML resource
             addPreferencesFromResource(R.xml.preferences);
 
-            Preference button = getPreferenceManager().findPreference("pref_exit");
-            if (button != null) {
-                button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    @Override
-                    public boolean onPreferenceClick(Preference arg0) {
-                        Log.v(getActivity().getApplicationContext().getClass().getName(), "Pref clicked");
-                        Intent i = new Intent(getActivity(), MainActivity.class);
-                        startActivity(i);
-                        return true;
-                    }
-                });
-            }
         }
     }
 }
