@@ -47,23 +47,22 @@ public class ConnectionHandler {
         String jsonCurrencies = getCurrencies();
 
         try {
-            JSONArray arr;
+            JSONObject jsonObj;
             if(jsonCurrencies != null && !jsonCurrencies.isEmpty()) {
-                arr = new JSONArray(jsonCurrencies);
+                jsonObj = new JSONObject(jsonCurrencies);
             } else {
                 Log.v(this.getClass().getName(), "Currencies not available");
                 return null;
             }
-            Log.v(this.getClass().getName(), "Json string: " + arr.getString(0));
+            Log.v(this.getClass().getName(), "Json string: " + jsonObj);
 
-            JSONObject jsonObj = arr.getJSONObject(0);
             JSONArray currArray = jsonObj.names();
 
             for(int i = 0; i < currArray.length(); i++) {
                 String key = currArray.getString(i);
                 String value = jsonObj.getString(key);
-                Log.v(this.getClass().getName(), "Json key: " + key);
-                Log.v(this.getClass().getName(), "Json value: " + value);
+                //Log.v(this.getClass().getName(), "Json key: " + key);
+                //Log.v(this.getClass().getName(), "Json value: " + value);
 
                 if(key.equals(DATE_KEY)) {
                     date = new Date(Long.parseLong(value) * 1000);
